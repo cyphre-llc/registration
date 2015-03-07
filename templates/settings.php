@@ -21,6 +21,7 @@ if (!empty($quota)) {
 </div>
 
 <?php
+$tierid = $config->getUserValue($uid, 'registration', 'tierid');
 if (empty($tierid) or $tierid < 2) {
 ?>
 <div class="section">
