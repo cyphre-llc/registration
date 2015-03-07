@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<info>
+	<id>registration</id>
+	<name>Registration</name>
+	<description>Self registration of users.</description>
+	<version>1.0.0</version>
+	<licence>AGPL</licence>
+	<author>Ben Collins</author>
+	<require>7</require>
+</info>
