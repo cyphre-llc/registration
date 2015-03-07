@@ -238,7 +238,7 @@ class Controller {
 				$caught = false;
 				$post = array_merge($_POST, array('email' => $email));
 				try {
-					$this->processTier($_POST['user'], $post, true);
+					self::processTier($_POST['user'], $post, true);
 					\OC_User::createUser($_POST['user'], $_POST['password']);	// create user now
 					\OC_Group::addToGroup($_POST['user'] , 'selfregistered' );	// create default group for new selfregistered users
 				} catch (\Exception $e) {
