@@ -1,8 +1,14 @@
+<?php
+$config = \OC::$server->getConfig();
+$uid = \OC_User::getUser();
+$quota = $config->getUserValue($uid, 'files', 'quota');
+?>
+
 <div id="quota" class="section">
         <div style="width:<?php p($_['usage_relative']);?>%;">
                 <p id="quotatext">
 <?php
-if (empty($tierid) or $tierid < 2) {
+if (!empty($quota)) {
         print_unescaped($l->t('You have used <strong>%s</strong> of the available <strong>%s</strong>',
                 array($_['usage'], $_['total_space'])));
 } else {
@@ -15,12 +21,6 @@ if (empty($tierid) or $tierid < 2) {
 </div>
 
 <?php
-$config = \OC::$server->getConfig();
-$uid = \OC_User::getUser();
-$tierid = $config->getUserValue($uid, 'registration', 'tierid', 0);
-
-\OCP\Util::addScript('registration', 'billing');
-
 if (empty($tierid) or $tierid < 2) {
 ?>
 <div class="section">
@@ -114,7 +114,7 @@ if (empty($tierid) or $tierid < 2) {
         <h2><?php p($l->t('Version'));?></h2>
         <strong><?php p($theme->getName()); ?></strong> <?php p(OC_Util::getHumanVersion()) ?><br />
 <?php if (OC_Util::getEditionString() === ''): ?>
-        <?php print_unescaped($l->t('Developed by the <a href="http://ownCloud.org/contact" target="_blank">ownCloud community</a>, the <a href="https://github.com/owncloud" target="_blank">source code</
+	<?php print_unescaped($l->t('Developed by the <a href="http://ownCloud.org/contact" target="_blank">ownCloud community</a>, the <a href="https://github.com/owncloud" target="_blank">source code</a> is licensed under the <a href="http://www.gnu.org/licenses/agpl-3.0.html" target="_blank"><abbr title="Affero General Public License">AGPL</abbr></a>.')); ?>
 <?php endif; ?>
 </div>
 
