@@ -36,7 +36,7 @@ try {
 	}
 
 	// Verify the BP_STAMP, starting with our secret...
-	$secret = \OCP\BluePay::SECRET_KEY;
+	$secret = \OCA\Registration\BluePay::SECRET_KEY;
 
 	// Now concatenate the values of fields in BP_STAMP_DEF
 	foreach (explode(" ", $_POST['BP_STAMP_DEF']) as $def) {
