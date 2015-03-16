@@ -1,4 +1,7 @@
-<?php \OCP\Util::addStyle('core', 'guest'); ?>
+<?php
+	OCP\Util::addStyle('core', 'guest');
+	$_['email'] = array_key_exists('email',$_) ? $_['email'] : '';
+?>
 
 <div id="login-pre-spacer"></div>
 <div id="login-messaging">
@@ -19,7 +22,7 @@
 				<?php print_unescaped($_['errormsg']); ?>
 				</p></div>
 				<p class="infield" style="position:absolute;">
-					<input style="padding-left: 1.8em;" type="email" name="email" id="email" placeholder="" value="" required autofocus />
+					<input style="padding-left: 1.8em;" type="email" name="email" id="email" placeholder="" value="<?php echo $_['email']; ?>" required autofocus />
 					<label for="email" class="infield"><?php print_unescaped($l->t( 'Email' )); ?></label>
 					<img style="position:absolute; left:1.25em; top:1.65em;-ms-filter:'progid:DXImageTransform.Microsoft.Alpha(Opacity=30)'; filter:alpha(opacity=30); opacity:.3;" class="svg" src="<?php print_unescaped(image_path('', 'actions/mail.svg')); ?>" alt=""/>
                                         <br>
@@ -40,7 +43,7 @@
 				<p class='info'><?php print_unescaped($l->t('You will receive an email with a verification link')); ?></p>
 			<?php endif; ?>
 			<p class="infield" style="position:absolute;">
-				<input style="width: 11.7em;	padding-left: 1.8em;"  type="email" name="email" id="email" placeholder="" value="" required autofocus />
+				<input style="width: 11.7em;	padding-left: 1.8em;"  type="email" name="email" id="email" placeholder="" value="<?php echo $_['email']; ?>" required autofocus />
 				<label for="email" class="infield"><?php print_unescaped($l->t( 'Email' )); ?></label>
 				<img style="position:absolute; left:1.25em; top:1.65em;-ms-filter:'progid:DXImageTransform.Microsoft.Alpha(Opacity=30)'; filter:alpha(opacity=30); opacity:.3;" class="svg" src="<?php print_unescaped(image_path('', 'actions/mail.svg')); ?>" alt=""/>
 			        <br>
