@@ -2,7 +2,7 @@
 	
 <ul>
 	<?php 
-	 if ( $_['errors'] ) { 
+	 if (array_key_exists('errors',$_) && $_['errors']){
 		foreach($_["errors"] as $error){
 			echo "<li class='error'>";
 				$error['error'];

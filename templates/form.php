@@ -1,3 +1,19 @@
+<?php
+	OCP\Util::addStyle('core', 'guest');
+	$_['email'] = array_key_exists('email',$_) ? $_['email'] : '';
+
+    if (!array_key_exists('entered_data',$_) || !is_array($_['entered_data'])){
+		$_['entered_data'] = array();
+	}
+	$_['entered_data']['email'] = array_key_exists('email',$_['entered_data']) ? $_['entered_data']['email'] : '';
+	$_['entered_data']['user'] = array_key_exists('user',$_['entered_data']) ? $_['entered_data']['user'] : '';
+	$_['entered_data']['tierid'] = array_key_exists('tierid',$_['entered_data']) ? $_['entered_data']['tierid'] : 1;
+	$_['entered_data']['firstname'] = array_key_exists('firstname',$_['entered_data']) ? $_['entered_data']['firstname'] : '';
+	$_['entered_data']['lastname'] = array_key_exists('lastname',$_['entered_data']) ? $_['entered_data']['lastname'] : '';
+	$_['entered_data']['country'] = array_key_exists('country',$_['entered_data']) ? $_['entered_data']['country'] : 'US';
+	$_['entered_data']['zip'] = array_key_exists('zip',$_['entered_data']) ? $_['entered_data']['zip'] : '';
+?>
+
 <form action="" method="post">
 	<fieldset>
 		<?php if ( $_['errormsgs'] ) {?>
@@ -112,7 +128,7 @@
 
 		<p class="infield">
 		<label for="cc_cardnum" class="" style="color: #ccc"><?php print_unescaped($l->t( 'Credit Card Number' )); ?></label><br>
-                <input type="text" name="cc_cardnum" id="cc_cardnum" autocomplete="cc-number" inputmode="numeric" value="<?php echo $_['entered_data']['cc_cardnum']; ?>" />
+                <input type="text" name="cc_cardnum" id="cc_cardnum" autocomplete="cc-number" inputmode="numeric" value="" />
                 </p>
 		<p class="infield">
 		<label for="cc_expmonth" class="" style="color: #ccc"><?php print_unescaped($l->t( 'Expiration Date' )); ?></label><br>
@@ -145,7 +161,7 @@
                 </p>
 		<p class="infield">
 		<label for="cc_ccv" class="" style="color: #ccc"><?php print_unescaped($l->t( 'Card Security Code' )); ?></label><br>
-                <input type="text" name="cc_ccv" id="cc_ccv" autocomplete="cc-csc" value="<?php echo $_['entered_data']['cc_ccv']; ?>" />
+                <input type="text" name="cc_ccv" id="cc_ccv" autocomplete="cc-csc" value="" />
                 </p>
 		<hr/>
 	</div>
@@ -162,4 +178,4 @@
 	</fieldset>
 </form>
 
-<script src="/core/registration/billing.js"></script>
+<?php OC_Util::addScript("registration", "billing");?>
