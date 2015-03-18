@@ -160,6 +160,7 @@ class Controller {
 			$bp->setSale($tier['amount']);
 			$bp->setRebill($tier['amount'], "1 Month", "1 Month");
 			$bp->setCustInfo(array(
+				/*
 				'account'	=> $uid,
 				'email'		=> self::myval('email', $post),
 				'memo'		=> $tier['description'],
@@ -170,6 +171,21 @@ class Controller {
 				'cvv2'		=> self::myval('cc_ccv', $post),
 				'expire'	=> $expire,
 				'country'	=> self::myval('country', $post),
+				*/
+
+				'account'	=> $uid,
+				'email'		=> self::myval('email', $post),
+				'memo'		=> $tier['description'],
+				'name1'		=> self::myval('firstname', $post),
+				'name2'		=> self::myval('lastname', $post),
+				'zip'		=> self::myval('zip', $post),
+				'account'	=> self::myval('cc_cardnum', $post),
+				'cvv2'		=> self::myval('cc_ccv', $post),
+				'expire'	=> $expire,
+				'country'	=> self::myval('country', $post),
+				'address'	=> self::myval('address', $post),
+				'city'	=> self::myval('city', $post),
+				'state'	=> self::myval('state', $post),
 			));
 
 			$bp->process();
@@ -191,6 +207,9 @@ class Controller {
 			$config->setUserValue($uid, 'registration', 'expire', $expire);
 			$config->setUserValue($uid, 'registration', 'firstname', $post['firstname']);
 			$config->setUserValue($uid, 'registration', 'lastname', $post['lastname']);
+			$config->setUserValue($uid, 'registration', 'address', $post['address']);
+			$config->setUserValue($uid, 'registration', 'city', $post['city']);
+			$config->setUserValue($uid, 'registration', 'state', $post['state']);
 			$config->setUserValue($uid, 'registration', 'zip', $post['zip']);
 			$config->setUserValue($uid, 'registration', 'country', $post['country']);
 			$config->setUserValue($uid, 'registration', 'rate', $tier['amount']);

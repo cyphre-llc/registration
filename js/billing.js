@@ -49,4 +49,52 @@ $(document).ready(function()
 		});
 		return false;
 	});
+
+	// validattion on fields those are NOT handled by formValidation:
+	$( "#regist" ).submit(function( event ) {
+		var msg = eleid = '';
+		if ($("#tierid option:selected").index()) {
+			if (!$("#firstname").val()) {
+				msg = 'firstname is required!';
+				eleid = "#firstname";
+			} else if(!$("#lastname").val()) {
+				msg = 'lastname is required!';
+				eleid = "#lastname";
+			} else if(!$("#address").val()) {
+				msg = 'Street address is required!';
+				eleid = "#address";
+			} else if(!$("#city").val()) {
+				msg = 'City address is required!';
+				eleid = "#city";
+			} else if(!$("#state").val()) {
+				msg = 'State address Code is required!';
+				eleid = "#state";
+			} else if(!$("#country option:selected").index()) {
+				msg = 'Please Select your country address!';
+				eleid = "#country";
+			} else if(!$("#city").val() && !$("#state").val() && !$("#zip").val()) {
+				msg = 'Zip code is required unless city and state are specified!';
+				eleid = "#zip";
+			} else if(!$("#cc_cardnum").val()||!/^\d+$/.test($("#cc_cardnum").val())) {
+				msg = 'Invalid Credit Card Number. Digits ONLY!';
+				eleid = "#cc_cardnum";
+			} else if(!$("#cc_ccv").val()||!/^\d{3}$/.test($("#cc_ccv").val())) {
+				 msg = 'Invalid Security Card Code. 3 Digits ONLY!';
+				 eleid = "#cc_ccv";
+			}
+
+		}
+		if (msg) {
+			$( '#formMsg' ).text(msg);
+			$( '#formMsgContainer' ).show().fadeOut(4000, function() {
+				$(eleid).focus();
+			});
+			event.preventDefault(); // Prevent form from submit ELSE return;
+			return false;
+		} else {
+
+			return true;
+		}
+
+	});
 });
