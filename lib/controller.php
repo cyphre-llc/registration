@@ -170,6 +170,9 @@ class Controller {
 				'cvv2'		=> self::myval('cc_ccv', $post),
 				'expire'	=> $expire,
 				'country'	=> self::myval('country', $post),
+				'address'	=> self::myval('address', $post),
+				'city'	=> self::myval('city', $post),
+				'state'	=> self::myval('state', $post),
 			));
 
 			$bp->process();
@@ -191,6 +194,9 @@ class Controller {
 			$config->setUserValue($uid, 'registration', 'expire', $expire);
 			$config->setUserValue($uid, 'registration', 'firstname', $post['firstname']);
 			$config->setUserValue($uid, 'registration', 'lastname', $post['lastname']);
+			$config->setUserValue($uid, 'registration', 'address', $post['address']);
+			$config->setUserValue($uid, 'registration', 'city', $post['city']);
+			$config->setUserValue($uid, 'registration', 'state', $post['state']);
 			$config->setUserValue($uid, 'registration', 'zip', $post['zip']);
 			$config->setUserValue($uid, 'registration', 'country', $post['country']);
 			$config->setUserValue($uid, 'registration', 'rate', $tier['amount']);
