@@ -1,5 +1,6 @@
 $(document).ready(function()
 {
+
 	$("#tierid").change(function()
 	{
 		var state = $('option:selected', this).attr('state');
@@ -48,5 +49,53 @@ $(document).ready(function()
 			}
 		});
 		return false;
+	});
+
+	// validattion on fields those are NOT handled by formValidation:
+	$( "#regist" ).submit(function( event ) {
+		var msg = eleid = '';
+		if ($("#tierid option:selected").index()) {
+			if (!$("#firstname").val()) {
+				msg = 'firstname is required';
+				eleid = "#firstname";
+			} else if(!$("#lastname").val()) {
+				msg = 'lastname is required';
+				eleid = "#lastname";
+			} else if(!$("#address").val()) {
+				msg = 'Street is required';
+				eleid = "#address";
+			} else if(!$("#city").val()) {
+				msg = 'City is required';
+				eleid = "#city";
+			} else if(!$("#state").val()) {
+				msg = 'State is required';
+				eleid = "#state";
+			} else if(!$("#country option:selected").index()) {
+				msg = 'Please Select your country address';
+				eleid = "#country";
+			} else if(!$("#zip").val()) {
+				msg = 'Zip is required';
+				eleid = "#zip";
+			} else if(!$("#cc_cardnum").val()||!/^\d+$/.test($("#cc_cardnum").val())) {
+				msg = 'Credit Card Number is required (Digits ONLY)';
+				eleid = "#cc_cardnum";
+			} else if(!$("#cc_ccv").val()||!/^\d+$/.test($("#cc_ccv").val())) {
+				 msg = 'Security Card Code is required (Digits ONLY)';
+				 eleid = "#cc_ccv";
+			}
+
+		}
+		if (msg) {
+			$( '#formMsg' ).text(msg);
+			$( '#formMsgContainer' ).show().fadeOut(4000, function() {
+				$(eleid).focus();
+			});
+			event.preventDefault(); // Prevent form from submit ELSE return;
+			return false;
+		} else {
+
+			return true;
+		}
+
 	});
 });
