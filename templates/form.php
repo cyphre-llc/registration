@@ -12,9 +12,13 @@
 	$_['entered_data']['lastname'] = array_key_exists('lastname',$_['entered_data']) ? $_['entered_data']['lastname'] : '';
 	$_['entered_data']['country'] = array_key_exists('country',$_['entered_data']) ? $_['entered_data']['country'] : 'US';
 	$_['entered_data']['zip'] = array_key_exists('zip',$_['entered_data']) ? $_['entered_data']['zip'] : '';
+	$_['entered_data']['address'] = array_key_exists('address',$_['entered_data']) ? $_['entered_data']['address'] : '';
+	$_['entered_data']['city'] = array_key_exists('city',$_['entered_data']) ? $_['entered_data']['city'] : '';
+	$_['entered_data']['state'] = array_key_exists('state',$_['entered_data']) ? $_['entered_data']['state'] : '';
+
 ?>
 
-<form action="" method="post">
+<form id="regist" action="" method="post">
 	<fieldset>
 		<?php if ( $_['errormsgs'] ) {?>
 		<div class="errors">
@@ -36,9 +40,6 @@
 		<label for="user" class="infield"><?php print_unescaped($l->t( 'Username' )); ?></label>
 		<img class="svg" src="<?php print_unescaped(image_path('', 'actions/user.svg')); ?>" alt=""/>
 		</p>
-
-
-		
 		
 		<p class="infield groupbottom">
 			<input type="password" name="password" id="password" value="" data-typetoggle="#show" placeholder="" required="" original-title="" style="display: inline-block;"><input type="text" name="password-clone" tabindex="0" autocomplete="off" style="display: none;" original-title="">
@@ -89,6 +90,7 @@
 ?>
 
 		<p class='info'><?php print_unescaped($l->t('Enter billing information')); ?></p>
+		<hr/>
                 <p class="infield">
 		<label for="firstname" class="" style="color: #ccc"><?php print_unescaped($l->t( 'First Name on Card' )); ?></label>
                 <input type="text" name="firstname" id="firstname" autocomplete="cc-given-name" value="<?php echo $_['entered_data']['firstname']; ?>" />
@@ -99,6 +101,21 @@
                 </p>
 
 		<hr/>
+
+		<p class="infield">
+			<label for="address" class="" style="color: #ccc"><?php print_unescaped($l->t( 'Street Address' )); ?></label><br>
+			<input type="text" name="address" id="address" autocomplete="street-address" maxlength="50" value="<?php echo $_['entered_data']['address']; ?>" />
+        </p>
+
+		<p class="infield">
+			<label for="city" class="" style="color: #ccc"><?php print_unescaped($l->t( 'City' )); ?></label><br>
+			<input type="text" name="city" id="city" autocomplete="city-address" maxlength="50" value="<?php echo $_['entered_data']['city']; ?>" />
+        </p>
+
+		<p class="infield">
+			<label for="state" class="" style="color: #ccc"><?php print_unescaped($l->t( 'State' )." (2 Letters Code)"); ?></label><br>
+			<input type="text" name="state" id="state" autocomplete="state-address" maxlength="2" value="<?php echo $_['entered_data']['state']; ?>" />
+        </p>
 
 		<p class="infield">
 		<label for="country" class="" style="color: #ccc"><?php print_unescaped($l->t( 'Country' )); ?></label><br>
@@ -173,6 +190,11 @@
 			I agree to <a style="text-decoration: none" target="_blank" href="/themes/svy/terms/cyphre_termsV2.htm" target="_blank">Terms and Conditions</a>
 			</p>
 		</p>
+		<br/>
+
+		<div id="formMsgContainer" class="errors" style="display:none;">
+			<p id="formMsg"></p>
+		</div>
 
 		<input type="submit" id="submit"  class="login primary" value="<?php print_unescaped($l->t('Create account')); ?>" />
 	</fieldset>
