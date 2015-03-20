@@ -198,7 +198,7 @@ class Controller {
 		}
 
 		/* Set Quota. A NULL value for quota means unlimited */
-		$size = '';
+		$size = null;
 		if (!empty($tier['size']))
 			$size = $tier['size'] . ' GB';
 		$config->setUserValue($uid, 'files', 'quota', $size);
