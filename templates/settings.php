@@ -2,6 +2,7 @@
 $config = \OC::$server->getConfig();
 $uid = \OC_User::getUser();
 $quota = $config->getUserValue($uid, 'files', 'quota');
+OCP\Util::addStyle('core', 'guest');
 ?>
 
 <div id="quota" class="section">
@@ -24,83 +25,41 @@ if (!empty($quota)) {
 $tierid = $config->getUserValue($uid, 'registration', 'tierid');
 if (empty($tierid) or $tierid < 2) {
 ?>
+
 <div class="section">
-       <h2><?php p($l->t('Upgrade to Unlimited Storage (for $7 USD/month)')); ?></h2><br/>
-       <div id="storagechanged"><?php echo $l->t('Your storage was upgraded');?></div>
-        <div id="storageerror"><?php echo $l->t('Unable to upgrade your storage');?></div>
-
-<form id="storageform">
-       <p>
-       <label for="firstname"><?php p($l->t('First and Last Name on Card'));?></label><br>
-       <input class="inlineblock" type="text" name="firstname" id="firstname" autocomplete="cc-given-name" value="<?php echo $_['entered_data']['firstname']; ?>" />
-       <input class="inlineblock" type="text" name="lastname" id="lastname" autocomplete="cc-family-name" value="<?php echo $_['entered_data']['lastname']; ?>" />
-       </p><br/>
-
-       <p>
-       <label for="country"><?php p($l->t('Country'));?></label><br>
-       <select name="country" id="country">
-       <option value="">-- Select one --</option>
+	<h2><?php p($l->t('Upgrade to Unlimited Storage (for $7 USD/month)')); ?></h2><br/>
+	<div id="storagechanged"><?php echo $l->t('Your storage was upgraded');?></div>
+	<div id="storageerror"><?php echo $l->t('Unable to upgrade your storage');?></div>
+	<form id="storageform">
+	<fieldset>
 <?php
-       $stmt = OC_DB::prepare('SELECT * FROM `*PREFIX*countries` WHERE code!=\'\' ORDER BY seq ASC');
-       $result = $stmt->execute(array());
-       while($row = $result->fetchRow()) {
-               print "\t\t<option value=\"". $row['code'] ."\"";
+	if (!array_key_exists('entered_data',$_) || !is_array($_['entered_data'])){
+		$_['entered_data'] = array();
+	}
+	$_['entered_data']['tierid'] = array_key_exists('tierid',$_['entered_data']) ? $_['entered_data']['tierid'] : $tierid;
+	$_['entered_data']['firstname'] = array_key_exists('firstname',$_['entered_data']) ? $_['entered_data']['firstname'] : '';
+	$_['entered_data']['lastname'] = array_key_exists('lastname',$_['entered_data']) ? $_['entered_data']['lastname'] : '';
+	$_['entered_data']['country'] = array_key_exists('country',$_['entered_data']) ? $_['entered_data']['country'] : 'US';
+	$_['entered_data']['zip'] = array_key_exists('zip',$_['entered_data']) ? $_['entered_data']['zip'] : '';
+	$_['entered_data']['address'] = array_key_exists('address',$_['entered_data']) ? $_['entered_data']['address'] : '';
+	$_['entered_data']['address1'] = array_key_exists('address1',$_['entered_data']) ? $_['entered_data']['address1'] : '';
+	$_['entered_data']['city'] = array_key_exists('city',$_['entered_data']) ? $_['entered_data']['city'] : '';
+	$_['entered_data']['state'] = array_key_exists('state',$_['entered_data']) ? $_['entered_data']['state'] : '';
 
-               if ($row['code'] == $_['entered_data']['country'])
-                       print " selected";
-
-               print ">". $row['name'] ."</option>\n";
-       }
+	$tmpl = new OCP\Template('registration', 'ccform');
+	$tmpl->assign('entered_data', $_['entered_data']);
+	$tmpl->printPage();
 ?>
-       </select>
-       </p><br/>
+		<hr/>
+		<div id="formMsgContainer" class="errors" style="display:none;">
+			<p id="formMsg"></p>
+		</div>
 
-       <p>
-       <label for="zip"><?php p($l->t('Zip Code'));?></label><br>
-       <input type="text" name="zip" id="zip" autocomplete="postal-code" inputmode="numeric" value="<?php echo $_['entered_data']['zip']; ?>" />
-       </p><br/>
-
-       <p>
-       <label for="cc_cardnum"><?php p($l->t('Credit Card Number'));?></label><br>
-       <input type="text" name="cc_cardnum" id="cc_cardnum" autocomplete="cc-number" inputmode="numeric" value="<?php echo $_['entered_data']['cc_cardnum']; ?>" />
-       </p><br/>
-
-       <p>
-       <label for="cc_expmonth"><?php p($l->t('Card Expiration'));?></label><br>
-       <select name="cc_expmonth" id="cc_expmonth" autocomplete="cc-exp-month">
-               <option value="1">1 - <?php print_unescaped($l->t( 'January' )); ?></option>
-               <option value="2">2 - <?php print_unescaped($l->t( 'February' )); ?></option>
-               <option value="3">3 - <?php print_unescaped($l->t( 'March' )); ?></option>
-               <option value="4">4 - <?php print_unescaped($l->t( 'April' )); ?></option>
-               <option value="5">5 - <?php print_unescaped($l->t( 'May' )); ?></option>
-               <option value="6">6 - <?php print_unescaped($l->t( 'June' )); ?></option>
-               <option value="7">7 - <?php print_unescaped($l->t( 'July' )); ?></option>
-               <option value="8">8 - <?php print_unescaped($l->t( 'August' )); ?></option>
-               <option value="9">9 - <?php print_unescaped($l->t( 'September' )); ?></option>
-               <option value="10">10 - <?php print_unescaped($l->t( 'October' )); ?></option>
-               <option value="11">11 - <?php print_unescaped($l->t( 'November' )); ?></option>
-               <option value="12">12 - <?php print_unescaped($l->t( 'December' )); ?></option>
-       </select>
-       <select name="cc_expyear" id="cc_expyear" autocomplete="cc-exp-year">
-<?php
-       // 10 years, starting from current year
-       $baseyear = date("Y");
-       for ($i = 0; $i < 10; $i++) {
-               $year = $baseyear + $i;
-               print "\t\t<option value='$year'>$year</option>\n";
-       }
-?>
-       </select>
-       </p><br/>
-
-       <p>
-       <label for="cc_ccv"><?php p($l->t('Card Security Code (ccv)'));?></label><br>
-       <input type="text" name="cc_ccv" id="cc_ccv" autocomplete="cc-csc" value="<?php echo $_['entered_data']['cc_ccv']; ?>" />
-       </p><br/>
-
-       <input id="storagebutton" type="submit" value="<?php echo $l->t('Upgrade Storage');?>" />
+		<input id="storagebutton" type="submit" value="<?php echo $l->t('Upgrade Storage');?>" />
+	</fieldset>
 </form>
 </div>
+
 <?php
 } else {
 ?>
@@ -110,6 +69,8 @@ if (empty($tierid) or $tierid < 2) {
 <?php
 }
 ?>
+
+<?php OC_Util::addScript("registration", "billing");?>
 
 <div class="section">
         <h2><?php p($l->t('Version'));?></h2>
