@@ -99,7 +99,6 @@ class Controller {
 		if (!empty($tierid))
 			return true;
 
-		$tierid;
 		$stmt = \OC_DB::prepare('SELECT * FROM `*PREFIX*tier_table` WHERE tierid= ?');
 		$result = $stmt->execute(array($tierid));
 		if (!$result) {

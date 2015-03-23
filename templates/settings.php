@@ -23,9 +23,17 @@ if (!empty($quota)) {
 <?php
 $tierid = $config->getUserValue($uid, 'registration', 'tierid');
 if (empty($tierid) or $tierid < 2) {
+	$stmt = \OC_DB::prepare('SELECT * FROM `*PREFIX*tier_table` WHERE tierid=2');
+	$result = $stmt->execute();
+	if (!$result) {
+		throw new \Exception('Invalid service level');
+		return false;
+	}
+
+	$tier = $result->fetchRow();
 ?>
 <div class="section">
-       <h2><?php p($l->t('Upgrade to Unlimited Storage (for $7 USD/month)')); ?></h2><br/>
+       <h2><?php p($l->t('Upgrade to ').$tier['description']); ?></h2><br/>
        <div id="storagechanged"><?php echo $l->t('Your storage was upgraded');?></div>
         <div id="storageerror"><?php echo $l->t('Unable to upgrade your storage');?></div>
 
