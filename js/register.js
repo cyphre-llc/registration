@@ -5,7 +5,7 @@ $(document).ready(function()
 		var msg = eleid = '';
 		if($("#email").val() !== $("#email-clone").val()) {
 			msg = 'Email addresses do not match';
-			eleid = "#email";
+			eleid = "#email-clone";
 		}
 
 		if (msg) {
