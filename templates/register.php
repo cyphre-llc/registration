@@ -21,17 +21,16 @@
 				<div class="errors"><p>
 				<?php print_unescaped($_['errormsg']); ?>
 				</p></div>
+				<p class='info'><?php print_unescaped($l->t('Please re-enter a valid email address')); ?></p><br/>
 
-			<p class="infield groupmiddle">
-				<label for="email"><?php print_unescaped($l->t( 'Email' )); ?></label><br/>
+			<p class="infield grouptop">
 				<input type="email" name="email" id="email" placeholder="<?php print_unescaped($l->t('Email')) ;?>" value="<?php echo $_['email']; ?>" required autofocus />
-				<img style="top:2.7em;" class="svg" src="<?php print_unescaped(image_path('', 'actions/mail.svg')); ?>" alt=""/>
+				<img style="top:1.4em;" class="svg" src="<?php print_unescaped(image_path('', 'actions/mail.svg')); ?>" alt=""/>
 			</p>
 
 			<p class="infield groupmiddle">
-				<label for="email-clone"><?php print_unescaped($l->t( 'Re-type Email' )); ?></label><br/>
 				<input type="email" name="email-clone" id="email-clone" placeholder="<?php print_unescaped($l->t('Re-type Email')) ;?>"/>
-				<img style="top:2.7em;" class="svg" src="<?php print_unescaped(image_path('', 'actions/mail.svg')); ?>" alt=""/>
+				<img style="top:1.0em;" class="svg" src="<?php print_unescaped(image_path('', 'actions/mail.svg')); ?>" alt=""/>
 			</p>
 			<br/>
 
@@ -51,20 +50,18 @@
 				<div class="errors"><p>
 				<?php print_unescaped($_['errormsg']); ?>
 				</p></div>
-				<p class='info'><?php print_unescaped($l->t('Please re-enter a valid email address')); ?></p>
+				<p class='info'><?php print_unescaped($l->t('Please enter a valid email address')); ?></p><br/>
 			<?php else: ?>
-				<p class='info'><?php print_unescaped($l->t('You will receive an email with a verification link')); ?></p>
+				<p class='info'><?php print_unescaped($l->t('You will receive an email with a verification link')); ?></p><br/>
 			<?php endif; ?>
-			<p class="infield groupmiddle">
-				<label for="email"><?php print_unescaped($l->t( 'Email' )); ?></label><br/>
+			<p class="infield grouptop">
 				<input type="email" name="email" id="email" placeholder="<?php print_unescaped($l->t('Email')) ;?>" value="<?php echo $_['email']; ?>" required autofocus />
-				<img style="top:2.7em;" class="svg" src="<?php print_unescaped(image_path('', 'actions/mail.svg')); ?>" alt=""/>
+				<img style="top:1.4em;" class="svg" src="<?php print_unescaped(image_path('', 'actions/mail.svg')); ?>" alt=""/>
 			</p>
 
 			<p class="infield groupmiddle">
-				<label for="email-clone"><?php print_unescaped($l->t( 'Re-type Email' )); ?></label><br/>
 				<input type="email" name="email-clone" id="email-clone" placeholder="<?php print_unescaped($l->t('Re-type Email')) ;?>"/>
-				<img style="top:2.7em;" class="svg" src="<?php print_unescaped(image_path('', 'actions/mail.svg')); ?>" alt=""/>
+				<img style="top:1.0em;" class="svg" src="<?php print_unescaped(image_path('', 'actions/mail.svg')); ?>" alt=""/>
 			</p>
 			<br/>
 
