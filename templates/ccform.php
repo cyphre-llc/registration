@@ -24,13 +24,13 @@
 <hr/>
 
 <p class="infield">
-	<label for="city"><?php print_unescaped($l->t( 'City' )); ?></label><br>
-	<input type="text" name="city" id="city" autocomplete="city-address" maxlength="50" value="<?php echo $_['entered_data']['city']; ?>" placeholder="<?php print_unescaped($l->t( 'City' )); ?>" />
+	<label for="city"><?php print_unescaped($l->t( 'City or Locality' )); ?></label><br>
+	<input type="text" name="city" id="city" autocomplete="city-address" maxlength="50" value="<?php echo $_['entered_data']['city']; ?>" placeholder="<?php print_unescaped($l->t( 'City or Locality' )); ?>" />
 </p>
 
 <p class="infield">
-	<label for="state"><?php print_unescaped($l->t( 'State' )." (2 Letters Code)"); ?></label><br>
-	<input type="text" name="state" id="state" autocomplete="state-address" maxlength="2" value="<?php echo $_['entered_data']['state']; ?>" placeholder="<?php print_unescaped($l->t( 'State' )); ?>" />
+	<label for="state"><?php print_unescaped($l->t( 'State or Province' )); ?></label><br>
+	<input type="text" name="state" id="state" autocomplete="state-address" maxlength="2" value="<?php echo $_['entered_data']['state']; ?>" placeholder="<?php print_unescaped($l->t( 'State or Province' )); ?>" />
 </p>
 
 <p class="infield">
