@@ -16,40 +16,64 @@
 		<?php print_unescaped($l->t('Thank you for registering, you should receive an email with the verification link in a few minutes.')); ?>
 		</p></div>
 	<?php else: ?>
-		<form action="<?php print_unescaped(OC_Helper::linkToRoute('registration.send.email')) ?>" method="post">
+		<form action="<?php print_unescaped(OC_Helper::linkToRoute('registration.send.email')) ?>" method="post" id="regist">
 			<fieldset>
 				<div class="errors"><p>
 				<?php print_unescaped($_['errormsg']); ?>
 				</p></div>
-				<p class="infield" style="position:absolute;">
-					<input style="padding-left: 1.8em;" type="email" name="email" id="email" placeholder="" value="<?php echo $_['email']; ?>" required autofocus />
-					<label for="email" class="infield"><?php print_unescaped($l->t( 'Email' )); ?></label>
-					<img style="position:absolute; left:1.25em; top:1.65em;-ms-filter:'progid:DXImageTransform.Microsoft.Alpha(Opacity=30)'; filter:alpha(opacity=30); opacity:.3;" class="svg" src="<?php print_unescaped(image_path('', 'actions/mail.svg')); ?>" alt=""/>
-                                        <br>
-				        <input type="submit" id="submit" class="login primary" value="<?php print_unescaped($l->t('Request link')); ?>" />
-				</p>
+				<p class='info'><?php print_unescaped($l->t('Please re-enter a valid email address')); ?></p><br/>
+
+			<p class="infield grouptop">
+				<input type="email" name="email" id="email" placeholder="<?php print_unescaped($l->t('Email')) ;?>" value="<?php echo $_['email']; ?>" required autofocus />
+				<img style="top:1.4em;" class="svg" src="<?php print_unescaped(image_path('', 'actions/mail.svg')); ?>" alt=""/>
+			</p>
+
+			<p class="infield groupmiddle">
+				<input type="email" name="email-clone" id="email-clone" placeholder="<?php print_unescaped($l->t('Re-type Email')) ;?>"/>
+				<img style="top:1.0em;" class="svg" src="<?php print_unescaped(image_path('', 'actions/mail.svg')); ?>" alt=""/>
+			</p>
+			<br/>
+
+			<div id="formMsgContainer" class="errors" style="display:none;">
+				<p id="formMsg"></p>
+			</div>
+
+			<input type="submit" id="submit"  class="login primary" value="<?php print_unescaped($l->t('Request link')); ?>" />
+
 			</fieldset>
 		</form>
 	<?php endif; ?>
 <?php else: ?>
-	<form action="<?php print_unescaped(OC_Helper::linkToRoute('registration.send.email')) ?>" method="post">
+	<form action="<?php print_unescaped(OC_Helper::linkToRoute('registration.send.email')) ?>" method="post" id="regist">
 		<fieldset>
 			<?php if (!empty($_['errormsg'])): ?>
 				<div class="errors"><p>
 				<?php print_unescaped($_['errormsg']); ?>
 				</p></div>
-				<p class='info'><?php print_unescaped($l->t('Please re-enter a valid email address')); ?></p>
+				<p class='info'><?php print_unescaped($l->t('Please enter a valid email address')); ?></p><br/>
 			<?php else: ?>
-				<p class='info'><?php print_unescaped($l->t('You will receive an email with a verification link')); ?></p>
+				<p class='info'><?php print_unescaped($l->t('You will receive an email with a verification link')); ?></p><br/>
 			<?php endif; ?>
-			<p class="infield" style="position:absolute;">
-				<input style="width: 11.7em;	padding-left: 1.8em;"  type="email" name="email" id="email" placeholder="" value="<?php echo $_['email']; ?>" required autofocus />
-				<label for="email" class="infield"><?php print_unescaped($l->t( 'Email' )); ?></label>
-				<img style="position:absolute; left:1.25em; top:1.65em;-ms-filter:'progid:DXImageTransform.Microsoft.Alpha(Opacity=30)'; filter:alpha(opacity=30); opacity:.3;" class="svg" src="<?php print_unescaped(image_path('', 'actions/mail.svg')); ?>" alt=""/>
-			        <br>
-			        <input type="submit" id="submit"  class="login primary" style="" value="<?php print_unescaped($l->t('Request link')); ?>" />
-		        </p>
+			<p class="infield grouptop">
+				<input type="email" name="email" id="email" placeholder="<?php print_unescaped($l->t('Email')) ;?>" value="<?php echo $_['email']; ?>" required autofocus />
+				<img style="top:1.4em;" class="svg" src="<?php print_unescaped(image_path('', 'actions/mail.svg')); ?>" alt=""/>
+			</p>
+
+			<p class="infield groupmiddle">
+				<input type="email" name="email-clone" id="email-clone" placeholder="<?php print_unescaped($l->t('Re-type Email')) ;?>"/>
+				<img style="top:1.0em;" class="svg" src="<?php print_unescaped(image_path('', 'actions/mail.svg')); ?>" alt=""/>
+			</p>
+			<br/>
+
+			<div id="formMsgContainer" class="errors" style="display:none;">
+				<p id="formMsg"></p>
+			</div>
+
+			<input type="submit" id="submit"  class="login primary" value="<?php print_unescaped($l->t('Request link')); ?>" />
+
 		</fieldset>
 	</form>
 <?php endif; ?>
+
+<?php OC_Util::addScript("registration", "register");?>
 

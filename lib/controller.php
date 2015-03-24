@@ -169,6 +169,11 @@ class Controller {
 				'cvv2'		=> self::myval('cc_ccv', $post),
 				'expire'	=> $expire,
 				'country'	=> self::myval('country', $post),
+				'addr1' => self::myval('address', $post),
+				'addr2' => self::myval('address1', $post),
+				'city'  => self::myval('city', $post),
+				'state' => self::myval('state', $post),
+
 			));
 
 			$bp->process();
@@ -194,6 +199,11 @@ class Controller {
 			$config->setUserValue($uid, 'registration', 'country', $post['country']);
 			$config->setUserValue($uid, 'registration', 'rate', $tier['amount']);
 			$config->setUserValue($uid, 'registration', 'rebill_id', $rebill_id);
+			$config->setUserValue($uid, 'registration', 'address', $post['address']);
+			$config->setUserValue($uid, 'registration', 'address1', $post['address1']);
+			$config->setUserValue($uid, 'registration', 'city', $post['city']);
+			$config->setUserValue($uid, 'registration', 'state', $post['state']);
+
 		}
 
 		/* Set Quota. A NULL value for quota means unlimited */
