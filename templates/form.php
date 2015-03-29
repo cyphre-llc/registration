@@ -50,7 +50,6 @@
 		</p>
 
 		<p class="infield groupbottom">
-			<label for="password-clone"><?php print_unescaped($l->t( 'Re-type Password' )); ?></label>
 			<input type="password" name="password-clone" id="password-clone" autocomplete="off" original-title="" placeholder="<?php print_unescaped($l->t( 'Re-type Password' )); ?>" />
 			<img style="top:2.7em;" id="password-icon" class="svg" src="<?php print_unescaped(image_path('', 'actions/password.svg')); ?>" alt=""/>
 		</p>
