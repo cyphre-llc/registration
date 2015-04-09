@@ -9,12 +9,26 @@
 </div>
 <div id="login-spacer"></div>
 <!--[if IE 8]><style>input[type="checkbox"]{padding:0;}</style><![endif]-->
+<style>
+div.success ul li {
+ text-align:center;
+ margin: 0 0 .5em 0;
+}
+</style>
 
 <?php if ($_['entered']): ?>
 	<?php if (empty($_['errormsg'])): ?>
-		<div class="success" style="width:100%;"><p>
-		<?php print_unescaped($l->t('Thank you for registering, you should receive an email with the verification link in a few minutes.')); ?>
-		</p></div>
+		<div class="success" style="width:100%;background:inherit;border:1px solid white;color:white;"><ul>
+		<?php
+			echo "<li>";
+			print_unescaped($l->t('In the next few minutes, you will receive an email from us with the subject line: "Cyphre Registration."'));
+			echo "</li><li>";
+			print_unescaped($l->t('You MUST open and click the link in the email to complete registration for Cyphre.'));
+			echo "</li><li>";
+			print_unescaped($l->t('Sometimes our emails may end up in your spam or junk folder, so make sure to check there as well.'));
+			echo "</li>";
+		?>
+		</ul></div>
 	<?php else: ?>
 		<form action="<?php print_unescaped(OC_Helper::linkToRoute('registration.send.email')) ?>" method="post" id="regist">
 			<fieldset>

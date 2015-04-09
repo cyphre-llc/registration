@@ -4,6 +4,13 @@ $(document).ready(function()
 
 	$("#tierid").change(function()
 	{
+
+		$( '#sales-tax-div' ).hide();
+
+		$('#tier_amount').val("");
+		$('#sales_tax_amount').val("");
+		$('#monthly_total_amount').val("");
+
 		var state = $('option:selected', this).attr('state');
 		if (state == "0")
 			$("#billing_display").hide();
@@ -33,6 +40,20 @@ $(document).ready(function()
 	$("#storagebutton").click( function(){
 		ccValidate();
 		if (!msg) {
+			if (!$('#sales_tax_amount').val()) {
+				getSalesTax();
+				if (!msg) {
+					$( "#sales-tax-div" ).slideDown('slow');
+				} else {
+					$( '#formMsg' ).text(msg);
+					$( '#formMsgContainer' ).show().fadeOut(4000, function() {
+						$(eleid).focus();
+					});
+				}
+				event.preventDefault();
+				return false;
+			}
+
 			// Serialize the data
 			var post = $( "#storageform" ).serialize();
 			$('#storagechanged').hide();
@@ -67,6 +88,14 @@ $(document).ready(function()
 			eleid = "#password";
 		} else if ($("#tierid option:selected").index()) {
 			ccValidate();
+			if (!msg && !$('#sales_tax_amount').val()) {
+				getSalesTax();
+				if (!msg) {
+					$( "#sales-tax-div" ).slideDown('slow');
+					event.preventDefault();
+					return false;
+				}
+			}
 		}
 
 		if (msg) {
@@ -114,4 +143,50 @@ $(document).ready(function()
 			eleid = "#cc_ccv";
 		}
 	}
+
+	function getSalesTax() {
+		msg = eleid = '';
+
+		$.ajax({url: OC.filePath('registration', 'ajax', 'salestax.php'),
+		    data: {
+					tierid: $( "#tierid" ).val(),
+					token: $( "#token" ).val(),
+					firstname: $( "#firstname" ).val(),
+					lastname: $( "#lastname" ).val(),
+					address: $( "#address" ).val(),
+					city: $( "#city" ).val(),
+					state: $( "#state" ).val(),
+					zip: $( "#zip" ).val(),
+					country: $( "#country" ).val()
+				},
+			type: 'get',
+			async: false,
+			success: function(result) {
+				if (result !== 'null') {
+					var trans = jQuery.parseJSON(result);
+					if (trans.amount && trans.taxamount) {
+						var amount, taxamount;
+						amount = parseFloat(trans.amount);
+						taxamount = parseFloat(trans.taxamount);
+						$('#tier_amount').val(amount.toFixed(2));
+						$('#sales_tax_amount').val(taxamount.toFixed(2));
+						$('#monthly_total_amount').val((amount + taxamount).toFixed(2));
+					} else {
+						msg = trans.errorMsg ? trans.errorMsg : 'Server is temprorarily busy, please try again later';
+						eleid = "#monthly_total_amount";
+					}
+				} else {
+					msg = 'Server is temprorarily busy, please try again later';
+					eleid = "#monthly_total_amount";
+				}
+			},
+
+			error: function(XMLHttpRequest, textStatus, errorThrown) { 
+				msg = 'Server is temprorarily busy, please try again later';
+				eleid = "#monthly_total_amount";
+			}  
+
+		});
+	}
+
 });

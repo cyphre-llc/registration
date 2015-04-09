@@ -92,3 +92,23 @@
 <p class="infield">
 	<input type="text" name="cc_ccv" id="cc_ccv" autocomplete="cc-csc" value="" placeholder="<?php print_unescaped($l->t( 'Card Security Code' )); ?>" />
 </p>
+
+<style>
+#tier_amount, #sales_tax_amount, #monthly_total_amount {background-color: rgba(230,230,230,.9)}
+</style>
+
+<div id="sales-tax-div" class="hidden">
+<hr/>
+<p class="infield">
+	<label for="tier_amount"><?php print_unescaped($l->t( 'Monthly Amount/USD' )); ?></label><br>
+	<input type="text" name="tier_amount" id="tier_amount" readonly value=""/>
+</p>
+<p class="infield">
+	<label for="sales_tax_amount"><?php print_unescaped($l->t( 'Sales Tax/USD' )); ?></label><br>
+	<input type="text" name="sales_tax_amount" id="sales_tax_amount" readonly value=""/>
+</p>
+<p class="infield">
+	<label for="monthly_total_amount"><?php print_unescaped($l->t( 'Monthly Total/USD' )); ?></label><br>
+	<input type="text" name="monthly_total_amount" id="monthly_total_amount" readonly value=""/>
+</p>
+</div>

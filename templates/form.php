@@ -16,6 +16,7 @@
 	$_['entered_data']['address1'] = array_key_exists('address1',$_['entered_data']) ? $_['entered_data']['address1'] : '';
 	$_['entered_data']['city'] = array_key_exists('city',$_['entered_data']) ? $_['entered_data']['city'] : '';
 	$_['entered_data']['state'] = array_key_exists('state',$_['entered_data']) ? $_['entered_data']['state'] : '';
+	$_['entered_data']['token'] = array_key_exists('token',$_['entered_data']) ? $_['entered_data']['token'] : '';
 
 ?>
 
@@ -47,11 +48,12 @@
 			<input type="password" name="password" id="password" value="" data-typetoggle="#show" placeholder="<?php print_unescaped($l->t( 'Password' )); ?>" required="" original-title="" style="display: inline-block;" />
 			<img style="top:2.7em;" id="password-icon" class="svg" src="<?php print_unescaped(image_path('', 'actions/password.svg')); ?>" alt=""/>
 			<input type="hidden" id="groups" name="groups" value="users" />
+			<input type="hidden" id="token" name="token" value="<?php echo $_['entered_data']['token']; ?>" />
 		</p>
 
 		<p class="infield groupbottom">
 			<input type="password" name="password-clone" id="password-clone" autocomplete="off" original-title="" placeholder="<?php print_unescaped($l->t( 'Re-type Password' )); ?>" />
-			<img style="top:2.7em;" id="password-icon" class="svg" src="<?php print_unescaped(image_path('', 'actions/password.svg')); ?>" alt=""/>
+			<img style="top:1.0em;" id="password-icon" class="svg" src="<?php print_unescaped(image_path('', 'actions/password.svg')); ?>" alt=""/>
 		</p>
 
 		<hr/>

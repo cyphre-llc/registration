@@ -65,7 +65,7 @@ class Controller {
 			$tmpl->assign('link', $link, false);
 			$msg = $tmpl->fetchPage();
 			try {
-			    \OC_Mail::send($_POST['email'], 'Cyphre User', $l->t('Verify your Cyphre Storage registration request'), $msg, $from, 'cyphre');
+			    \OC_Mail::send($_POST['email'], 'Cyphre User', $l->t('Cyphre Registration.'), $msg, $from, 'cyphre', 1);
 			} catch (Exception $e) {
 				\OC_Template::printErrorPage( 'A problem occurs during sending the e-mail please contact your administrator.');
 			}
@@ -150,14 +150,29 @@ class Controller {
 
 		/* Only do this for tiers that require payment */
 		if ($tier['amount'] > 0) {
+			// AvaTax:
+			$avatax = self::calSalesTax($post, false);
+
+			if (!$avatax || array_key_exists('errorMsg', $avatax)) {
+				$avatax['errorMsg'] = $avatax['errorMsg'] ? $avatax['errorMsg'] : 'Unable to determine sales tax amount';
+				throw new \Exception($avatax['errorMsg']);
+				return false;
+			} else if (floatval($post['sales_tax_amount']) != floatval($avatax['taxamount'])) {
+				$avatax['errorMsg'] = "Previewed sales_tax_amount and charged sales_tax_amount do not match.";
+				throw new \Exception($avatax['errorMsg']);
+				return false;
+			}
+
 			$expire = sprintf("%02d%02d", self::myval('cc_expmonth', $post),
 				substr(self::myval('cc_expyear', $post), -2));
 
 			$bp = new \OCA\Registration\BluePay();
 
 			// TODO Tax will be the second arg here -- BenC
-			$bp->setSale($tier['amount']);
-			$bp->setRebill($tier['amount'], "1 Month", "1 Month");
+			$totalamount = $tier['amount'] + $avatax['taxamount'];
+			$bp->setSale($totalamount, $avatax['taxamount']);
+			$bp->setRebill($totalamount, "1 Month", "1 Month");
+
 			$bp->setCustInfo(array(
 				'account'	=> $uid,
 				'email'		=> self::myval('email', $post),
@@ -184,6 +199,10 @@ class Controller {
 			}
 
 			$rebill_id = $bp->rebillId();
+
+			// Record AvaTax:
+			$avatax = self::calSalesTax($post, true);
+
 		}
 
 		$config = \OC::$server->getConfig();
@@ -198,6 +217,7 @@ class Controller {
 			$config->setUserValue($uid, 'registration', 'zip', $post['zip']);
 			$config->setUserValue($uid, 'registration', 'country', $post['country']);
 			$config->setUserValue($uid, 'registration', 'rate', $tier['amount']);
+			$config->setUserValue($uid, 'registration', 'sales_tax_amount', $avatax['taxamount']);
 			$config->setUserValue($uid, 'registration', 'rebill_id', $rebill_id);
 			$config->setUserValue($uid, 'registration', 'address', $post['address']);
 			$config->setUserValue($uid, 'registration', 'address1', $post['address1']);
@@ -220,7 +240,7 @@ class Controller {
 		$email = self::verifyToken($args['token']);
 
 		if ( $email !== false ) {
-			self::displayRegisterForm(array(), array(), $email);
+			self::displayRegisterForm(array(), array('token' => $args['token']), $email);
 		} else {
 			self::displayRegisterPage($l->t('Your registration request has expired or already been used, please make a new request below.'), false);
 		}
@@ -258,6 +278,14 @@ class Controller {
 				if (!$caught) {
 					\OC_Preferences::setValue($_POST['user'], "settings", "email", "$email");
 					\OC_Preferences::setValue($_POST['user'], "settings", "tosagree", $_POST['tosagree']);
+					// Enable adminRecovery by default:
+			        $view = new \OC\Files\View('/');
+			        $util = new \OCA\Encryption\Util($view, $_POST['user']);
+				    $util->addRecoveryKeys();
+			        if (!$util->setRecoveryForUser(true)) {
+						\OCP\Util::writeLog('files_encryption', "Enable Admin_Recovery failed for New user '".$_POST['user']."'", \OCP\Util::ERROR);
+					}
+
 					\OCP\Template::printGuestPage('registration', 'message',
 						array('success' => "you did it"));
 					// delete request after account created
@@ -296,13 +324,169 @@ class Controller {
 		}
 	}
 
-
-
 	public static function verifyToken($token) {
 		$query = \OC_DB::prepare('SELECT `email` FROM `*PREFIX*pending_regist` WHERE `token` = ? ');
 		$email = $query->execute(array($token))->fetchOne();
 		return \OC_DB::isError($email) ? false : $email;
 	}
+
+	/**
+	 * @brief Pre config params before making Avalar Tax Service request
+	 * @param $args = form's fields, $commit is attr. for Avalar request
+	 * @return success ? $avatax hash : null
+	 */
+	public static function calSalesTax ($args, $commit = false) {
+		require_once 'lib/base.php';
+
+		if (self::verifyToken($args['token'])) {
+			$query = \OC_DB::prepare('SELECT * FROM `*PREFIX*tier_table` WHERE tierid= ?');
+			$result = $query->execute(array($args['tierid']));
+			if ($result) {
+				$tier = $result->fetchRow();
+				
+				$inv = array();
+
+				// Billing Header info:
+				$docHeader = array();
+				$docHeader['customerCode'] = $args['firstname'] . "_" . $args['lastname'];
+				$docHeader['docDate'] = date("Y-m-d");
+				$docHeader['docCode'] = $docHeader['customerCode'] . "-" . date("Ymd") . time();
+
+
+				$inv['docHeader'] = $docHeader;
+
+				// Billing amount & description:
+				$line = new \OCA\Registration\Avatax\Line();
+
+				$line->setLineNo("01");
+				$line->setItemCode("STORAGE");
+				$line->setQty(1);
+				$line->setAmount($tier['amount']);
+				$line->setOriginCode("01");
+				$line->setDestinationCode("02");
+				$line->setDescription("Cyphre monthly storage");
+
+				// TaxCode to use for this item
+				$line->setTaxCode(\OC::$server->getConfig()->getAppValue('avatax', 'storage_tax_code', 'SD021100'));
+
+				$inv['line'] = $line;
+
+				$address = new \OCA\Registration\Avatax\Address();
+				$address->setAddressCode("02");
+
+				// Use this address for sales tax amount TEST:
+				/*
+				$address->setLine1("701 Brazos St.");
+				$address->setLine2('Suite 1616');
+				$address->setCity("Austin");
+				$address->setRegion("TX");
+				$address->setPostalCode("78701");
+				*/
+
+				// User input address:
+				$address->setLine1($args['address']);
+				$address->setCity($args['city']);
+				$address->setRegion($args['state']);
+				$address->setPostalCode($args['zip']);
+
+				$inv['address'] = $address;
+
+				$inv['commit'] = $commit;
+				$avatax = self::avataxGetSalesTax ($inv);
+
+				if ($avatax && array_key_exists('taxamount', $avatax)) {
+					$avatax['amount'] = $tier['amount'];
+				}
+				return $avatax;
+
+			} else { // oc_tier_table query error -> log?
+				\OCP\Util::writeLog('registration', 'Missing oc_tier_table record', \OCP\Util::ERROR);
+				return null;	// just quietly fail with busy msg
+			}
+		} else { // oc_pending_regist query error -> log?
+			\OCP\Util::writeLog('registration', 'Missing oc_pending_regist record', \OCP\Util::ERROR);
+			return null;	// just quietly fail with busy msg
+		}
+	}
+
+	/**
+	 * @brief get sales tax amount from Avalar Tax Service request
+	 * @param $inv = sales/invoice hash
+	 * @return success ? $avatax hash : null
+	 */
+	public static function avataxGetSalesTax ($inv = array()) {
+		if ( array_key_exists('docHeader', $inv)
+				&& array_key_exists('line', $inv)
+				&& array_key_exists('address', $inv) ) {
+
+			// Avatax server config:
+			$config = \OC::$server->getConfig();
+			$serviceURL = $config->getAppValue('avatax', 'server_url', 'https://development.avalara.net/');
+			$accountNumber = $config->getAppValue('avatax', 'account_number', '1100142003');
+			$licenseKey = $config->getAppValue('avatax', 'license_key', '2A6D9CD73C85AF53');
+
+	        // Tax service classes:
+	        $taxSvc = new \OCA\Registration\Avatax\TaxServiceRest($serviceURL, $accountNumber, $licenseKey);
+	        $getTaxRequest = new \OCA\Registration\Avatax\GetTaxRequest();
+
+			// Servergy info:
+			$getTaxRequest->setCompanyCode($config->getAppValue('avatax', 'company_code', 'SVY'));
+			$getTaxRequest->setClient($config->getAppValue('avatax', 'client_code', 'AvaTaxSample'));
+
+			$address = new \OCA\Registration\Avatax\Address();
+			$address->setAddressCode("01");
+
+			$address->setLine1($config->getAppValue('avatax', 'company_address1', '5900 S. Lake Forest Dr.'));
+			$address->setLine2($config->getAppValue('avatax', 'company_address2', 'Suite 120'));
+			$address->setCity($config->getAppValue('avatax', 'company_address_city', 'McKinney'));
+			$address->setRegion($config->getAppValue('avatax', 'company_address_state', 'TX'));
+			$address->setPostalCode($config->getAppValue('avatax', 'company_address_zip', '75070'));
+
+			// Document Header:
+			$getTaxRequest->setCustomerCode($inv['docHeader']['customerCode']);
+			$getTaxRequest->setDocDate($inv['docHeader']['docDate']);
+			$getTaxRequest->setDocCode($inv['docHeader']['docCode']);
+
+			// Addresses:
+			$getTaxRequest->setAddresses(array($address, $inv['address']));
+
+			// Request attributes:
+			$inv['commit'] = array_key_exists('commit', $inv) ? $inv['commit'] : false;
+			if ($inv['commit']) {
+				$getTaxRequest->setDocType(\OCA\Registration\Avatax\DocumentType::$SalesInvoice);
+			}
+
+			$getTaxRequest->setCommit($inv['commit']);
+			$getTaxRequest->setCurrencyCode("USD");
+			$getTaxRequest->setDetailLevel(\OCA\Registration\Avatax\DetailLevel::$Document);
+
+			// Line Item:
+			$getTaxRequest->setLines(array($inv['line']));
+
+			// Get Tax from Avatax:
+			$getTaxResult = $taxSvc->getTax($getTaxRequest);
+
+			if($getTaxResult->getResultCode() == \OCA\Registration\Avatax\SeverityLevel::$Success) {
+
+				return array('taxamount' => $getTaxResult->getTotalTax());
+
+			} else { // avatax return error -> log?
+				$errorMsg = "";
+				foreach($getTaxResult->getMessages() as $message) {
+					$errorMsg .= $message->getSeverity() . ": " . $message->getSummary() . ". ";
+				}
+				if (strpos($errorMsg, 'Unable to determine the taxing jurisdictions') !== false) {
+					$errorMsg = 'Error: Invalid input address';
+				}
+				return (array('errorMsg' => $errorMsg));
+			}
+		} else { // Our config error -> log?
+			\OCP\Util::writeLog('registration', 'avataxGetSalesTax call with invalid params', \OCP\Util::ERROR);
+			return null;	// just quietly fail with busy msg
+		}
+
+	}
+	//----------------------------------------------------------------------------------------------
 }
 
 ?>

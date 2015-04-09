@@ -68,8 +68,11 @@ try {
         }
 
 	$rate = $config->getValue($user[0], 'registration', 'rate', 0);
+	$tax = $config->getValue($user[0], 'registration', 'sales_tax_amount', 0);
+	$totalamount = floatval($rate) + floatval($tax);
+
 	// Check that amount matches rate
-	if (floatval($rate) != floatval($_POST['rebilling_amount'])) {
+	if ($totalamount != floatval($_POST['rebilling_amount'])) {
 		// Just a warning right now, do not fail
 		\OCP\Util::writeLog('rebill', 'Mismatch between rate and rebill amount',
 				    \OCP\Util::ERROR);
