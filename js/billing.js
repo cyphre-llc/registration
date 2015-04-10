@@ -6,7 +6,6 @@ $(document).ready(function()
 	{
 
 		$( '#sales-tax-div' ).hide();
-
 		$('#tier_amount').val("");
 		$('#sales_tax_amount').val("");
 		$('#monthly_total_amount').val("");
@@ -42,14 +41,6 @@ $(document).ready(function()
 		if (!msg) {
 			if (!$('#sales_tax_amount').val()) {
 				getSalesTax();
-				if (!msg) {
-					$( "#sales-tax-div" ).slideDown('slow');
-				} else {
-					$( '#formMsg' ).text(msg);
-					$( '#formMsgContainer' ).show().fadeOut(4000, function() {
-						$(eleid).focus();
-					});
-				}
 				$("#storagebutton").blur();
 				return false;
 			}
@@ -72,6 +63,7 @@ $(document).ready(function()
 					$('#storageerror').show();
 				}
 			});
+
 		} else {
 			$( '#formMsg' ).text(msg);
 			$( '#formMsgContainer' ).show().fadeOut(4000, function() {
@@ -90,11 +82,8 @@ $(document).ready(function()
 			ccValidate();
 			if (!msg && !$('#sales_tax_amount').val()) {
 				getSalesTax();
-				if (!msg) {
-					$( "#sales-tax-div" ).slideDown('slow');
-					event.preventDefault();
-					return false;
-				}
+				event.preventDefault();
+				return false;
 			}
 		}
 
@@ -171,19 +160,32 @@ $(document).ready(function()
 						$('#tier_amount').val(amount.toFixed(2));
 						$('#sales_tax_amount').val(taxamount.toFixed(2));
 						$('#monthly_total_amount').val((amount + taxamount).toFixed(2));
+						$( "#sales-tax-div" ).slideDown('slow');
 					} else {
 						msg = trans.errorMsg ? trans.errorMsg : 'Server is temprorarily busy, please try again later';
 						eleid = "#monthly_total_amount";
+						$( '#formMsg' ).text(msg);
+						$( '#formMsgContainer' ).show().fadeOut(4000, function() {
+							$(eleid).focus();
+						});
 					}
 				} else {
 					msg = 'Server is temprorarily busy, please try again later';
 					eleid = "#monthly_total_amount";
+					$( '#formMsg' ).text(msg);
+					$( '#formMsgContainer' ).show().fadeOut(4000, function() {
+						$(eleid).focus();
+					});
 				}
 			},
 
 			error: function(XMLHttpRequest, textStatus, errorThrown) { 
 				msg = 'Server is temprorarily busy, please try again later';
 				eleid = "#monthly_total_amount";
+				$( '#formMsg' ).text(msg);
+				$( '#formMsgContainer' ).show().fadeOut(4000, function() {
+					$(eleid).focus();
+				});
 			}  
 
 		});
