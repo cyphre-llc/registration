@@ -50,7 +50,7 @@ $(document).ready(function()
 						$(eleid).focus();
 					});
 				}
-				event.preventDefault();
+				$("#storagebutton").blur();
 				return false;
 			}
 

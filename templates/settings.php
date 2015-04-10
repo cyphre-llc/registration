@@ -33,7 +33,7 @@ if ($_['tierid'] < 2) {
 		<div id="formMsgContainer" class="errors" style="display:none;">
 			<p id="formMsg"></p>
 		</div>
-
+		<input type="hidden" id="tierid" name="tierid" value="<?php echo $_['tier']['tierid']; ?>" />
 		<input id="storagebutton" type="submit" value="<?php echo $l->t('Upgrade Storage');?>" />
 	</fieldset>
 </form>

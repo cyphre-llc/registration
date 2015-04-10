@@ -338,7 +338,6 @@ class Controller {
 	public static function calSalesTax ($args, $commit = false) {
 		require_once 'lib/base.php';
 
-		if (self::verifyToken($args['token'])) {
 			$query = \OC_DB::prepare('SELECT * FROM `*PREFIX*tier_table` WHERE tierid= ?');
 			$result = $query->execute(array($args['tierid']));
 			if ($result) {
@@ -403,10 +402,6 @@ class Controller {
 				\OCP\Util::writeLog('registration', 'Missing oc_tier_table record', \OCP\Util::ERROR);
 				return null;	// just quietly fail with busy msg
 			}
-		} else { // oc_pending_regist query error -> log?
-			\OCP\Util::writeLog('registration', 'Missing oc_pending_regist record', \OCP\Util::ERROR);
-			return null;	// just quietly fail with busy msg
-		}
 	}
 
 	/**

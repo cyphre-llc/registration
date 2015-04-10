@@ -15,14 +15,12 @@
 <tr><td width="20px;"></td>
 <td style="text-align:left;min-width:600px;<?php print_unescaped($mailTheme['contentBgColor']);?>;">
 <br>
-<?php print_unescaped($l->t('Hi there!<br><br>To register for your account please Click on the link.')); ?>
-<ul style="list-style-type:none">
-<li>
-<a style="text-decoration:none;" href="<?php print_unescaped($_['link']); ?>">Cyphre cloud storage account registration</a>
-</li>
-</ul>
+<?php print_unescaped($l->t('Hi there!')); ?>
 <br><br>
-Cheers,<br>Team Cyphre
+<?php print_unescaped($l->t('To complete your Cyphre account registration, please confirm your email address by clicking')); ?>
+ <a style="text-decoration:none;" href="<?php print_unescaped($_['link']); ?>"><?php print_unescaped($l->t('here')); ?></a>.
+<br><br><br>
+<?php print_unescaped($l->t('Cheers,<br>Team Cyphre')); ?>
 <br><br>
 </td>
 <td width="20px;"></td></tr>
@@ -35,11 +33,11 @@ Cheers,<br>Team Cyphre
 <tr><td colspan="3"><br></td></tr>
 <tr><td width="20px;"></td>
 <td style="text-align:center;min-width:600px;">
-We would love to hear from you. To send us feedback simply email us at
+<?php print_unescaped($l->t('We would love to hear from you. To send us feedback simply email us at')); ?>
 <br>
-<a style="text-decoration:none;" href="mailto:support@cyphre.com" target="_blank">support@cyphre.com</a> or find us on 
+<a style="text-decoration:none;" href="mailto:support@cyphre.com" target="_blank">support@cyphre.com</a> <?php print_unescaped($l->t('or find us on')); ?> 
 <a style="text-decoration:none;" href="https://www.facebook.com/pages/Cyphre/424876137665559">Facebook</a>
- or <a style="text-decoration:none;" href="https://twitter.com/GetCyphre">Twitter</a>.
+ <?php print_unescaped($l->t('or')); ?> <a style="text-decoration:none;" href="https://twitter.com/GetCyphre">Twitter</a>.
 </td>
 <td width="20px;"></td></tr>
 <tr><td colspan="3"><br></td></tr>
