@@ -16,38 +16,41 @@ if (!empty($_['quota'])) {
         </div>
 </div>
 
+<div class="section">
+
 <?php
 if ($_['tierid'] < 2) {
 ?>
-
-<div class="section">
 	<h2><?php p($l->t('Upgrade to ').$_['tier']['description']); ?></h2><br/>
 	<div id="storagechanged"><?php echo $l->t('Your storage was upgraded');?></div>
 	<div id="storageerror"><?php echo $l->t('Unable to upgrade your storage');?></div>
+<?php
+} else {
+?>
+    <h2><?php print_unescaped($l->t('You are enjoying unlimited <strong>Cyphre</strong> Storage')); ?></h2>
+	<div id="storagechanged"><?php echo $l->t('Your Credit Card information was updded');?></div>
+	<div id="storageerror"><?php echo $l->t('Unable to updade your Credit Card information, please check your input information.');?></div>
+<?php
+}
+?>
 	<form id="storageform">
 	<fieldset>
-
 		<?php print_unescaped($_['ccform']); ?>
-
 		<hr/>
 		<div id="formMsgContainer" class="errors" style="display:none;">
 			<p id="formMsg"></p>
 		</div>
-		<input type="hidden" id="tierid" name="tierid" value="<?php echo $_['tier']['tierid']; ?>" />
-		<input id="storagebutton" type="submit" value="<?php echo $l->t('Upgrade Storage');?>" />
+		<input type="hidden" id="tierid" name="tierid"
+		<?php
+		 if ($_['tierid'] < 2)
+			print_unescaped('value="'.$_['tier']['tierid'].'"/><input id="storagebutton" type="submit" value="'.$l->t('Upgrade Storage').'"/>');
+		 else
+			print_unescaped('value="'.$_['tierid'] . '"/><input id="ccupdatebutton" type="submit" value="'.$l->t('Update Billing').'"/>');
+		?>
 	</fieldset>
 </form>
-</div>
 
-<?php
-} else {
-?>
-<div class="section">
-       <h2><?php print_unescaped($l->t('You are enjoying unlimited <strong>Cyphre</strong> Storage')); ?></h2>
 </div>
-<?php
-}
-?>
 
 <?php OC_Util::addScript("registration", "billing");?>
 

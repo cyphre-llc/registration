@@ -15,6 +15,7 @@ class BluePay {
 
 	/* constants */
 	const POST_URL = 'https://secure.bluepay.com/interfaces/bp20post'; // the url to post to
+	const REBILLPOST_URL = 'https://secure.bluepay.com/interfaces/bp20rebadmin'; // rebill post url
 
 	/* STATUS response constants */
 	const STATUS_DECLINE = '0'; // DECLINE
@@ -49,6 +50,16 @@ class BluePay {
 	}
 
 	/***
+	 * performs an AUTH
+	 */
+	 public function SetAuth($amount, $tax = "")
+	 {
+		$this->post['TRANS_TYPE'] = "AUTH";
+		$this->post['AMOUNT_TAX'] = self::formatAmount($tax);
+		$this->post['AMOUNT'] = self::formatAmount($amount);
+	 }
+
+	/***
 	 * rebCancel()
 	 *
 	 * Will cancel a rebilling cycle.
@@ -75,10 +86,27 @@ class BluePay {
 		$this->post['REB_CYCLES']	= $cycles;
 	}
 
+	/***
+	 * Passes rebilling information for a rebill update
+	 */
+	public function updateRebillCCard($rebillID, $templateID, $rebNextDate = '',
+					$rebExpr = '', $rebCycles = '', $rebAmount = '')
+	{
+		$this->post['TRANS_TYPE'] = "SET";
+		$this->post['REBILL_ID'] = $rebillID;
+		$this->post["TEMPLATE_ID"] = $templateID;
+		$this->post['NEXT_DATE'] = $rebNextDate;
+		$this->post['REB_EXPR'] = $rebExpr;
+		$this->post['REB_CYCLES'] = $rebCycles;
+		$this->post['REB_AMOUNT'] = $rebAmount;
+		$this->post["STATUS"] = 'active';
+	}
+
 	protected static function getValue($name, $cust)
 	{
 		return empty($cust[$name]) ? "" : $cust[$name];
 	}
+
 
 	/***
 	 * setCustInfo()
@@ -123,11 +151,13 @@ class BluePay {
 	 */
 	protected function calcTPS()
 	{
-		$hashstr = $this->secretKey . $this->post['ACCOUNT_ID'] .
-			$this->post['TRANS_TYPE'] . $this->post['AMOUNT'] .
-			$this->post['MASTER_ID'] . $this->post['NAME1'] .
-			$this->post['PAYMENT_ACCOUNT'];
-
+		$hashstr = $this->secretKey . $this->post['ACCOUNT_ID'] . $this->post['TRANS_TYPE'];
+		if ($this->post['TRANS_TYPE'] != "SET" && $this->post['TRANS_TYPE'] != "GET") {
+			$hashstr .= $this->post['AMOUNT'] . $this->post['MASTER_ID'] 
+						. $this->post['NAME1'] . $this->post['PAYMENT_ACCOUNT'];
+		} else {
+			$hashstr .= $this->post['REBILL_ID'] ;
+		}
 		return bin2hex( md5($hashstr, true) );
 	}
 
@@ -146,7 +176,11 @@ class BluePay {
 		/* perform the transaction */
 		$ch = curl_init();
 	
-		curl_setopt($ch, CURLOPT_URL, self::POST_URL); // Set the URL
+		curl_setopt($ch, CURLOPT_URL, 
+			($this->post['TRANS_TYPE'] != "SET" && $this->post['TRANS_TYPE'] != "GET")
+			? self::POST_URL
+			: self::REBILLPOST_URL); // Set the URL
+
 		curl_setopt($ch, CURLOPT_USERAGENT, "BluepayPHP SDK/2.0"); // Cosmetic
 		curl_setopt($ch, CURLOPT_POST, 1); // Perform a POST
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0); // Turns off verification of the SSL certificate.
@@ -172,4 +206,10 @@ class BluePay {
 	public function status() { return $this->response['STATUS']; }
 	public function message() { return $this->response['MESSAGE']; }
 	public function rebillId() { return $this->response['REBID']; }
+	public function rebillStatus() { return $this->response;}
+
+	// Rebill's CC update:
+	public function getRebStatus() { return $this->response['status']; }
+	public function getTemplateID() { return $this->response['template_id']; }
+
 }

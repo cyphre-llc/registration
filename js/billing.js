@@ -51,16 +51,22 @@ $(document).ready(function()
 			$('#storageerror').hide();
 			// Ajax foo
 			$.post(OC.filePath( 'registration', 'ajax', 'changestorage.php' ), post, function(data){
+				$("#storagebutton").blur();
 				if( data.status === "success" ){
 					$('#storagechanged').show();
 					$('#storageform').hide();
 				} else{
 					if (typeof(data.data) !== "undefined") {
-						$('#storageerror').html(data.data.message);
+						msg = data.data.message;
 					} else {
-						$('#storageerror').html(t('Unable to change storage'));
+						msg = t('Unable to change storage');
 					}
+					$('#storageerror').html(msg);
 					$('#storageerror').show();
+					$( '#formMsg' ).text(msg);
+					$( '#formMsgContainer' ).show().fadeOut(4000, function() {
+						$( "div#content-wrapper" ).scrollTop(0);
+					});
 				}
 			});
 
@@ -70,6 +76,46 @@ $(document).ready(function()
 				$(eleid).focus();
 			});
 		}
+		return false;
+	});
+
+	$("#ccupdatebutton").click( function(){
+
+		ccValidate();
+		if (!msg) {
+			// Serialize the data
+			var post = $( "#storageform" ).serialize();
+			$('#storagechanged').hide();
+			$('#storageerror').hide();
+			// Ajax foo
+			$.post(OC.filePath( 'registration', 'ajax', 'ccinfoupdate.php' ), post, function(data){
+				$("#ccupdatebutton").blur();
+				if( data.status === "success" ){
+					$('#storageform').hide();
+					$('#storagechanged').slideDown('slow');
+				} else{
+					if (typeof(data.data) !== "undefined") {
+						msg = data.data.message;
+					} else {
+						msg = t('Unable to change storage');
+					}
+					$('#storageerror').html(msg);
+					$('#storageerror').show();
+					$( '#formMsg' ).text(msg);
+					$( '#formMsgContainer' ).show().fadeOut(4000, function() {
+						$( "div#content-wrapper" ).scrollTop(0);
+					});
+					$('html, body').animate({ scrollTop: 0 }, 0);
+				}
+			});
+		} else {
+			$( '#formMsg' ).text(msg);
+			$( '#formMsgContainer' ).show().fadeOut(4000, function() {
+				$(eleid).focus();
+			});
+			$('html, body').animate({ scrollTop: 0 }, 0);
+		}
+
 		return false;
 	});
 

@@ -373,7 +373,7 @@ class Controller {
 				$address = new \OCA\Registration\Avatax\Address();
 				$address->setAddressCode("02");
 
-				// Use this address for sales tax amount TEST:
+				// Use this (Texas) address for sales tax amount TEST:
 				/*
 				$address->setLine1("701 Brazos St.");
 				$address->setLine2('Suite 1616');
@@ -416,9 +416,10 @@ class Controller {
 
 			// Avatax server config:
 			$config = \OC::$server->getConfig();
-			$serviceURL = $config->getAppValue('avatax', 'server_url', 'https://development.avalara.net/');
-			$accountNumber = $config->getAppValue('avatax', 'account_number', '1100142003');
-			$licenseKey = $config->getAppValue('avatax', 'license_key', '2A6D9CD73C85AF53');
+
+			$serviceURL = $config->getAppValue('avatax', 'server_url', 'https://avatax.avalara.net/');
+			$accountNumber = $config->getAppValue('avatax', 'account_number', '1100068945');
+			$licenseKey = $config->getAppValue('avatax', 'license_key', 'C7849AD12D313B85');
 
 	        // Tax service classes:
 	        $taxSvc = new \OCA\Registration\Avatax\TaxServiceRest($serviceURL, $accountNumber, $licenseKey);
