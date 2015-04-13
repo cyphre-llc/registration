@@ -274,7 +274,8 @@ class Controller {
 					self::displayRegisterForm(array($e->getMessage()), $_POST, $email);
 					$caught = true;
 				}
-					// if successfully created the user - set preferences-settings-email to the given email adress (for lostpassword and userwiththisemail already exists check )
+					// if successfully created the user - set preferences-settings-email to the given email adress ...
+					// (for lostpassword and userwiththisemail already exists check )
 				if (!$caught) {
 					\OC_Preferences::setValue($_POST['user'], "settings", "email", "$email");
 					\OC_Preferences::setValue($_POST['user'], "settings", "tosagree", $_POST['tosagree']);
@@ -338,71 +339,84 @@ class Controller {
 	public static function calSalesTax ($args, $commit = false) {
 		require_once 'lib/base.php';
 
-			$query = \OC_DB::prepare('SELECT * FROM `*PREFIX*tier_table` WHERE tierid= ?');
-			$result = $query->execute(array($args['tierid']));
-			if ($result) {
-				$tier = $result->fetchRow();
-				
-				$inv = array();
+		$query = \OC_DB::prepare('SELECT * FROM `*PREFIX*tier_table` WHERE tierid= ?');
+		$result = $query->execute(array($args['tierid']));
+		if ($result) {
+			$tier = $result->fetchRow();
+			$args['amount'] = $tier['amount'];
+			$args['commit'] = $commit;
 
-				// Billing Header info:
-				$docHeader = array();
-				$docHeader['customerCode'] = $args['firstname'] . "_" . $args['lastname'];
-				$docHeader['docDate'] = date("Y-m-d");
-				$docHeader['docCode'] = $docHeader['customerCode'] . "-" . date("Ymd") . time();
+			$avatax = self::avataxGetSalesTax (self::createInvoice($args));
 
-
-				$inv['docHeader'] = $docHeader;
-
-				// Billing amount & description:
-				$line = new \OCA\Registration\Avatax\Line();
-
-				$line->setLineNo("01");
-				$line->setItemCode("STORAGE");
-				$line->setQty(1);
-				$line->setAmount($tier['amount']);
-				$line->setOriginCode("01");
-				$line->setDestinationCode("02");
-				$line->setDescription("Cyphre monthly storage");
-
-				// TaxCode to use for this item
-				$line->setTaxCode(\OC::$server->getConfig()->getAppValue('avatax', 'storage_tax_code', 'SD021100'));
-
-				$inv['line'] = $line;
-
-				$address = new \OCA\Registration\Avatax\Address();
-				$address->setAddressCode("02");
-
-				// Use this (Texas) address for sales tax amount TEST:
-				/*
-				$address->setLine1("701 Brazos St.");
-				$address->setLine2('Suite 1616');
-				$address->setCity("Austin");
-				$address->setRegion("TX");
-				$address->setPostalCode("78701");
-				*/
-
-				// User input address:
-				$address->setLine1($args['address']);
-				$address->setCity($args['city']);
-				$address->setRegion($args['state']);
-				$address->setPostalCode($args['zip']);
-
-				$inv['address'] = $address;
-
-				$inv['commit'] = $commit;
-				$avatax = self::avataxGetSalesTax ($inv);
-
-				if ($avatax && array_key_exists('taxamount', $avatax)) {
-					$avatax['amount'] = $tier['amount'];
-				}
-				return $avatax;
-
-			} else { // oc_tier_table query error -> log?
-				\OCP\Util::writeLog('registration', 'Missing oc_tier_table record', \OCP\Util::ERROR);
-				return null;	// just quietly fail with busy msg
+			if ($avatax && array_key_exists('taxamount', $avatax)) {
+				$avatax['amount'] = $tier['amount'];
 			}
+			return $avatax;
+
+		} else { // oc_tier_table query error -> log?
+			\OCP\Util::writeLog('registration', 'Missing oc_tier_table record', \OCP\Util::ERROR);
+			return null;	// just quietly fail with busy msg
+		}
 	}
+
+
+	/**
+	 * @brief Create a sales invoice to post to Avalara Sales Tax:
+	 * @return inv hash
+	 */
+	public static function createInvoice($args) {
+				
+		$inv = array();
+
+		// Billing Header info:
+		$docHeader = array();
+		$docHeader['customerCode'] = $args['firstname'] . "_" . $args['lastname'];
+		$docHeader['docDate'] = date("Y-m-d");
+		$docHeader['docCode'] = $docHeader['customerCode'] . "-" . date("Ymd") . time();
+
+
+		$inv['docHeader'] = $docHeader;
+
+		// Billing amount & description:
+		$line = new \OCA\Registration\Avatax\Line();
+
+		$line->setLineNo("01");
+		$line->setItemCode("STORAGE");
+		$line->setQty(1);
+		$line->setAmount($args['amount']);
+		$line->setOriginCode("01");
+		$line->setDestinationCode("02");
+		$line->setDescription("Cyphre monthly storage");
+
+		// TaxCode to use for this item
+		$line->setTaxCode(\OC::$server->getConfig()->getAppValue('avatax', 'storage_tax_code', 'SD021100'));
+
+		$inv['line'] = $line;
+
+		$address = new \OCA\Registration\Avatax\Address();
+		$address->setAddressCode("02");
+
+		// Use this (Texas) address for sales tax amount TEST:
+		/*
+		$address->setLine1("701 Brazos St.");
+		$address->setLine2('Suite 1616');
+		$address->setCity("Austin");
+		$address->setRegion("TX");
+		$address->setPostalCode("78701");
+		*/
+
+		// User input address:
+		$address->setLine1($args['address']);
+		$address->setCity($args['city']);
+		$address->setRegion($args['state']);
+		$address->setPostalCode($args['zip']);
+
+		$inv['address'] = $address;
+		$inv['commit'] = $args['commit'];
+
+		return $inv;
+	}
+
 
 	/**
 	 * @brief get sales tax amount from Avalar Tax Service request

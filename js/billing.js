@@ -87,7 +87,6 @@ $(document).ready(function()
 			var post = $( "#storageform" ).serialize();
 			$('#storagechanged').hide();
 			$('#storageerror').hide();
-			// Ajax foo
 			$.post(OC.filePath( 'registration', 'ajax', 'ccinfoupdate.php' ), post, function(data){
 				$("#ccupdatebutton").blur();
 				if( data.status === "success" ){
