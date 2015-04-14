@@ -28,7 +28,7 @@ if ($_['tierid'] < 2) {
 } else {
 ?>
     <h2><?php print_unescaped($l->t('You are enjoying unlimited <strong>Cyphre</strong> Storage')); ?></h2>
-	<div id="storagechanged"><?php echo $l->t('Your Credit Card information was updded');?></div>
+	<div id="storagechanged"><?php echo $l->t('Your Credit Card information was updated');?></div>
 	<div id="storageerror"><?php echo $l->t('Unable to updade your Credit Card information, please check your input information.');?></div>
 <?php
 }

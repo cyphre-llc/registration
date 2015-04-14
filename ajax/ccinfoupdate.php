@@ -46,6 +46,16 @@ if ($rebill_id) {
 			OC_JSON::success();
 			// Update user's NEW last 4 cardnum:
 			$config->setUserValue($uid, 'registration', 'cardnum', substr($_POST['cc_cardnum'], -4));
+			$config->setUserValue($uid, 'registration', 'expire', $expire);
+			$config->setUserValue($uid, 'registration', 'firstname', $_POST['firstname']);
+			$config->setUserValue($uid, 'registration', 'lastname', $_POST['lastname']);
+			$config->setUserValue($uid, 'registration', 'address', $_POST['address']);
+			$config->setUserValue($uid, 'registration', 'address1', $_POST['address1']);
+			$config->setUserValue($uid, 'registration', 'city', $_POST['city']);
+			$config->setUserValue($uid, 'registration', 'state', $_POST['state']);
+			$config->setUserValue($uid, 'registration', 'zip', $_POST['zip']);
+			$config->setUserValue($uid, 'registration', 'country', $_POST['country']);
+
 		} else {
 			OC_JSON::error(array("data" => array("message" => $l->t('Please contact support for this request.'))));
 			\OCP\Util::writeLog('setting', "UserId '$uid': Rebill_Credit_Card_Update failed", \OCP\Util::ERROR);
