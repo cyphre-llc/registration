@@ -85,6 +85,45 @@ div.success ul li {
 
 			<input type="submit" id="submit"  class="login primary" value="<?php print_unescaped($l->t('Request link')); ?>" />
 
+			<div style="clear:both;height:40px;"></div>
+			
+<style>
+  div.phone-email-support {
+	margin: 0 4px;
+	padding: 16px;
+	background:inherit;
+	border:1px solid #fff;
+	color:#F1C530;
+	text-align:center;
+	font-size: 15px;
+	font-weight: 600;
+  }
+
+  div.phone-email-support:hover {
+	padding: 16px;
+	color: #F1C530;
+	border: 1px solid #F1C530;
+  }
+
+  div.phone-email-support a {
+	color: #F1C530;
+  }
+
+  div.phone-email-support a:hover {
+	text-decoration: underline;
+  }
+</style>
+			<div class="phone-email-support">
+				<ul style="list-style-type:none;">
+					<li>
+						1 (855) 202-2005
+					</li>
+					<li>
+						<a href="mailto:cyphresupport@cyphre.com" target="_top">cyphresupport@cyphre.com</a>
+					<li>
+				</ul>
+			</div>
+
 		</fieldset>
 	</form>
 <?php endif; ?>
