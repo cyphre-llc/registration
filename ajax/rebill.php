@@ -67,17 +67,41 @@ try {
 		exit();
         }
 
-	$rate = $config->getValue($user[0], 'registration', 'rate', 0);
-	$tax = $config->getValue($user[0], 'registration', 'sales_tax_amount', 0);
-	$totalamount = floatval($rate) + floatval($tax);
+	$rate = floatval($config->getValue($user[0], 'registration', 'rate', 0));
+	$tax = floatval($config->getValue($user[0], 'registration', 'sales_tax_amount', 0));
+	$totalamount = $rate + $tax;
 
 	// Check that amount matches rate
 	if ($totalamount != floatval($_POST['rebilling_amount'])) {
 		// Just a warning right now, do not fail
-		\OCP\Util::writeLog('rebill', 'Mismatch between rate and rebill amount',
+		\OCP\Util::writeLog('rebill', 'UserId "'.$user[0].'": Mismatch between rate and rebill amount',
 				    \OCP\Util::ERROR);
 	}
 
+	// Post rebill trans. to Avalara Sales Tax:
+	$inv = OCA\Registration\Controller::createInvoice(array (
+				'firstname'	=> $config->getValue($user[0], 'registration', 'firstname', ''),
+				'lastname'	=> $config->getValue($user[0], 'registration', 'lastname', ''),
+				'amount'	=> $rate,
+				'address'	=> $config->getValue($user[0], 'registration', 'address', ''),
+				'city'		=> $config->getValue($user[0], 'registration', 'city', ''),
+				'state'		=> $config->getValue($user[0], 'registration', 'state', ''),
+				'zip'		=> $config->getValue($user[0], 'registration', 'zip', ''),
+				'commit'	=> true,
+		));
+
+	$avatax = OCA\Registration\Controller::avataxGetSalesTax($inv);
+
+    if (!$avatax || !array_key_exists('taxamount', $avatax)
+		|| $avatax['taxamount'] != $tax) {
+
+		// TODO take action on Avalara POST's sales tax amount diff. than rebill's sales tax amount:
+		// Just a warning right now, do not fail
+		\OCP\Util::writeLog('rebill', "UserId '".$user[0]."': Mismatch between Avalar's POST's and rebill's sales_tax_amount",
+				    \OCP\Util::ERROR);
+	}
+
+	//---------------------------------------------------------------------------------
 	// TODO Check rebill status (auth or denied) and take appropriate action
 
 	// TODO Store result in transaction table

@@ -1,5 +1,5 @@
 <br/>
-<p style="text-align:center;"><label><b><?php print_unescaped($l->t('Enter billing information')); ?></b></label></p>
+<p style="text-align:center;"><label><b><?php print_unescaped($l->t($_['tierid'] < 2 ? 'Enter billing information' : 'Update billing information')); ?></b></label></p>
 <hr/>
 <p class="infield">
 	<label for="firstname"><?php print_unescaped($l->t( 'Name on card' )); ?></label><br>
@@ -56,7 +56,7 @@
 
 <p class="infield">
 	<label for="cc_cardnum"><?php print_unescaped($l->t( 'Credit Card' )); ?></label><br>
-	<input type="text" name="cc_cardnum" id="cc_cardnum" autocomplete="cc-number" inputmode="numeric" value="" placeholder="<?php print_unescaped($l->t( 'Credit Card Number' )); ?>" />
+	<input type="text" name="cc_cardnum" id="cc_cardnum" autocomplete="cc-number" inputmode="numeric" value="<?php echo $_['entered_data']['cardnum']; ?>" placeholder="<?php print_unescaped($l->t( 'Credit Card Number' )); ?>" />
 </p>
 <p class="infield">
 	<label for="cc_expmonth"><?php print_unescaped($l->t( 'Expiration Date' )); ?></label><br>

@@ -6,7 +6,6 @@ $(document).ready(function()
 	{
 
 		$( '#sales-tax-div' ).hide();
-
 		$('#tier_amount').val("");
 		$('#sales_tax_amount').val("");
 		$('#monthly_total_amount').val("");
@@ -42,15 +41,7 @@ $(document).ready(function()
 		if (!msg) {
 			if (!$('#sales_tax_amount').val()) {
 				getSalesTax();
-				if (!msg) {
-					$( "#sales-tax-div" ).slideDown('slow');
-				} else {
-					$( '#formMsg' ).text(msg);
-					$( '#formMsgContainer' ).show().fadeOut(4000, function() {
-						$(eleid).focus();
-					});
-				}
-				event.preventDefault();
+				$("#storagebutton").blur();
 				return false;
 			}
 
@@ -60,16 +51,60 @@ $(document).ready(function()
 			$('#storageerror').hide();
 			// Ajax foo
 			$.post(OC.filePath( 'registration', 'ajax', 'changestorage.php' ), post, function(data){
+				$("#storagebutton").blur();
 				if( data.status === "success" ){
 					$('#storagechanged').show();
 					$('#storageform').hide();
 				} else{
 					if (typeof(data.data) !== "undefined") {
-						$('#storageerror').html(data.data.message);
+						msg = data.data.message;
 					} else {
-						$('#storageerror').html(t('Unable to change storage'));
+						msg = t('Unable to change storage');
 					}
+					$('#storageerror').html(msg);
 					$('#storageerror').show();
+					$( '#formMsg' ).text(msg);
+					$( '#formMsgContainer' ).show().fadeOut(4000, function() {
+						$( "div#content-wrapper" ).scrollTop(0);
+					});
+				}
+			});
+
+		} else {
+			$( '#formMsg' ).text(msg);
+			$( '#formMsgContainer' ).show().fadeOut(4000, function() {
+				$(eleid).focus();
+			});
+		}
+		return false;
+	});
+
+	$("#ccupdatebutton").click( function(){
+
+		ccValidate();
+		if (!msg) {
+			// Serialize the data
+			var post = $( "#storageform" ).serialize();
+			$('#storagechanged').hide();
+			$('#storageerror').hide();
+			$.post(OC.filePath( 'registration', 'ajax', 'ccinfoupdate.php' ), post, function(data){
+				$("#ccupdatebutton").blur();
+				if( data.status === "success" ){
+					$('#storageform').hide();
+					$('#storagechanged').slideDown('slow');
+				} else{
+					if (typeof(data.data) !== "undefined") {
+						msg = data.data.message;
+					} else {
+						msg = t('Unable to change storage');
+					}
+					$('#storageerror').html(msg);
+					$('#storageerror').show();
+					$( '#formMsg' ).text(msg);
+					$( '#formMsgContainer' ).show().fadeOut(4000, function() {
+						$( "div#content-wrapper" ).scrollTop(0);
+					});
+					$('html, body').animate({ scrollTop: 0 }, 0);
 				}
 			});
 		} else {
@@ -77,7 +112,9 @@ $(document).ready(function()
 			$( '#formMsgContainer' ).show().fadeOut(4000, function() {
 				$(eleid).focus();
 			});
+			$('html, body').animate({ scrollTop: 0 }, 0);
 		}
+
 		return false;
 	});
 
@@ -90,11 +127,8 @@ $(document).ready(function()
 			ccValidate();
 			if (!msg && !$('#sales_tax_amount').val()) {
 				getSalesTax();
-				if (!msg) {
-					$( "#sales-tax-div" ).slideDown('slow');
-					event.preventDefault();
-					return false;
-				}
+				event.preventDefault();
+				return false;
 			}
 		}
 
@@ -171,19 +205,32 @@ $(document).ready(function()
 						$('#tier_amount').val(amount.toFixed(2));
 						$('#sales_tax_amount').val(taxamount.toFixed(2));
 						$('#monthly_total_amount').val((amount + taxamount).toFixed(2));
+						$( "#sales-tax-div" ).slideDown('slow');
 					} else {
 						msg = trans.errorMsg ? trans.errorMsg : 'Server is temprorarily busy, please try again later';
 						eleid = "#monthly_total_amount";
+						$( '#formMsg' ).text(msg);
+						$( '#formMsgContainer' ).show().fadeOut(4000, function() {
+							$(eleid).focus();
+						});
 					}
 				} else {
 					msg = 'Server is temprorarily busy, please try again later';
 					eleid = "#monthly_total_amount";
+					$( '#formMsg' ).text(msg);
+					$( '#formMsgContainer' ).show().fadeOut(4000, function() {
+						$(eleid).focus();
+					});
 				}
 			},
 
 			error: function(XMLHttpRequest, textStatus, errorThrown) { 
 				msg = 'Server is temprorarily busy, please try again later';
 				eleid = "#monthly_total_amount";
+				$( '#formMsg' ).text(msg);
+				$( '#formMsgContainer' ).show().fadeOut(4000, function() {
+					$(eleid).focus();
+				});
 			}  
 
 		});

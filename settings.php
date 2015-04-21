@@ -1,20 +1,4 @@
 <?php
-// Read user's settings from database to pass into template:
-$config = \OC::$server->getConfig();
-$uid = \OC_User::getUser();
-$quota = $config->getUserValue($uid, 'files', 'quota');
-
-$tierid = $config->getUserValue($uid, 'registration', 'tierid', 1);
-if ($tierid < 2) {
-	$stmt = \OC_DB::prepare('SELECT * FROM `*PREFIX*tier_table` WHERE tierid=2');
-	$result = $stmt->execute();
-	if (!$result) {
-		throw new \Exception('Invalid service level');
-		return false;
-	}
-	$tier = $result->fetchRow();
-}
-
 // If entered data:
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 	$entered = $_POST;
@@ -24,9 +8,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 	$entered = array();
 }
 
+// Read user's settings from database to pass into template:
+$config = \OC::$server->getConfig();
+$uid = \OC_User::getUser();
+$quota = $config->getUserValue($uid, 'files', 'quota');
+
+$tierid = $config->getUserValue($uid, 'registration', 'tierid', 1);
+
+if ($tierid < 2) {
+	$stmt = \OC_DB::prepare('SELECT * FROM `*PREFIX*tier_table` WHERE tierid=2');
+	$result = $stmt->execute();
+	if (!$result) {
+		throw new \Exception('Invalid service level');
+		return false;
+	}
+	$tier = $result->fetchRow();
+} else {
+	$entered['firstname'] = $config->getUserValue($uid, 'registration', 'firstname', '');
+	$entered['lastname'] = $config->getUserValue($uid, 'registration', 'lastname', '');
+	$entered['cardnum'] = str_repeat('X', 12) . $config->getUserValue($uid, 'registration', 'cardnum', '');
+	$entered['address'] = $config->getUserValue($uid, 'registration', 'address', '');
+	$entered['address1'] = $config->getUserValue($uid, 'registration', 'address1', '');
+	$entered['city'] = $config->getUserValue($uid, 'registration', 'city', '');
+	$entered['state'] = $config->getUserValue($uid, 'registration', 'state', '');
+	$entered['zip'] = $config->getUserValue($uid, 'registration', 'zip', '');
+	$entered['country'] = $config->getUserValue($uid, 'registration', 'country', '');
+	$tier = array();
+}
+
 // Initialized form's params:
 $entered['firstname'] = array_key_exists('firstname',$entered) ? $entered['firstname'] : '';
 $entered['lastname'] = array_key_exists('lastname',$entered) ? $entered['lastname'] : '';
+$entered['cardnum'] = array_key_exists('cardnum',$entered) ? $entered['cardnum'] : '';
 $entered['country'] = array_key_exists('country',$entered) ? $entered['country'] : 'US';
 $entered['zip'] = array_key_exists('zip',$entered) ? $entered['zip'] : '';
 $entered['address'] = array_key_exists('address',$entered) ? $entered['address'] : '';
@@ -37,6 +50,7 @@ $entered['state'] = array_key_exists('state',$entered) ? $entered['state'] : '';
 // Fetch ccform:
 $ccform = new OCP\Template('registration', 'ccform');
 $ccform->assign('entered_data', $entered);
+$ccform->assign('tierid', $tierid);
 
 // Fetch main setting form:
 $tmpl = new OCP\Template('registration', 'settings');
