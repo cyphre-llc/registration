@@ -7,4 +7,4 @@ Download:
 To come
 
 Developement depot:
-https://github.com/servergy/registration.git
+https://github.com/cyphre-llc/registration.git
